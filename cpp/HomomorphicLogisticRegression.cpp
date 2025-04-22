@@ -7,6 +7,33 @@
 using namespace std;
 using namespace seal;
 
+#include <map>
+
+// Utility function to load .env file
+map<string, string> load_env(const string& filename)
+{
+    map<string, string> env_map;
+    ifstream file(filename);
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open .env file: " << filename << endl;
+        return env_map;
+    }
+    
+    string line;
+    while (getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue; // Skip empty lines and comments
+        auto delimiter_pos = line.find('=');
+        if (delimiter_pos == string::npos) continue; // Skip invalid lines
+        string key = line.substr(0, delimiter_pos);
+        string value = line.substr(delimiter_pos + 1);
+        env_map[key] = value;
+    }
+    file.close();
+    return env_map;
+}
+
 // CSV Utils
 vector<vector<double>> read_csv_matrix(const string &filename, size_t cols)
 {

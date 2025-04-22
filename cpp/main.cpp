@@ -11,11 +11,12 @@ int main()
 
     // ========== 1) Load CSV Data ==========
     cout << "=== 1) Loading CSV files for weights, biases, X_test, y_test ===" << endl;
-    vector<vector<double>> W = read_csv_matrix("/Users/noureddinekamzon/Desktop/Uni passau/master theisi/EncCreditScoring-HE/data/weight_matrix.csv");
-    vector<vector<double>> b_mat = read_csv_matrix("/Users/noureddinekamzon/Desktop/Uni passau/master theisi/EncCreditScoring-HE/data/bias_vector.csv");
-    vector<vector<double>> X_test = read_csv_matrix("/Users/noureddinekamzon/Desktop/Uni passau/master theisi/EncCreditScoring-HE/data/X_test.csv");
-    vector<double> y_test = read_csv_single_col("/Users/noureddinekamzon/Desktop/Uni passau/master theisi/EncCreditScoring-HE/data/y_test.csv");
+    auto env = load_env("../../.env");
 
+    vector<vector<double>> W = read_csv_matrix(env["WEIGHT_MATRIX_PATH"]);
+    vector<vector<double>> b_mat = read_csv_matrix(env["BIAS_VECTOR_PATH"]);
+    vector<vector<double>> X_test = read_csv_matrix(env["X_TEST_PATH"]);
+    vector<double> y_test = read_csv_single_col(env["Y_TEST_PATH"]);
     if (b_mat.size() != 1)
     {
         cerr << "Error: bias_vector.csv should have exactly 1 row => (1 x num_classes)." << endl;

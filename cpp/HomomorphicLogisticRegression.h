@@ -9,6 +9,8 @@
 using namespace std;
 using namespace seal;
 
+
+map<string, string> load_env(const string& filename);
 // CSV Utils
 vector<vector<double>> read_csv_matrix(const string &filename, size_t cols = 0);
 vector<double> read_csv_single_col(const string &filename);
