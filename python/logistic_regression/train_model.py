@@ -11,7 +11,7 @@ from imblearn.over_sampling import SMOTE
 # -----------------------------
 # 1) LOAD & PREPROCESS DATA
 # -----------------------------
-df = pd.read_csv("../data/train.csv", low_memory=False)
+df = pd.read_csv("../../data/train.csv", low_memory=False)
 
 cols_to_keep = [
     "Age",
@@ -176,7 +176,7 @@ with torch.no_grad():
 print("Weight matrix shape:", weight_matrix.shape)
 print("Bias vector shape:", bias_vector.shape)
 
-np.savetxt("../data/weight_matrix.csv", weight_matrix, delimiter=",")
-np.savetxt("../data/bias_vector.csv", bias_vector[None], delimiter=",")  # shape (1,3)
-np.savetxt("../data/X_test.csv", X_test, delimiter=",")
-np.savetxt("../data/y_test.csv", y_test, delimiter=",")
+np.savetxt("../../data/resluts_log_reg/weight_matrix.csv", weight_matrix, delimiter=",")
+np.savetxt("../../data/resluts_log_reg/bias_vector.csv", bias_vector[None], delimiter=",")  # shape (1,3)
+np.savetxt("../../data/resluts_log_reg/X_test.csv", X_test, delimiter=",")
+np.savetxt("../../data/resluts_log_reg/y_test.csv", y_test, delimiter=",")
