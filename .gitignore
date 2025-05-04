@@ -28,6 +28,7 @@
 # Build directories
 build/
 cmake-build-*/
+logreg/
 
 # Logs and temporary files
 *.log
