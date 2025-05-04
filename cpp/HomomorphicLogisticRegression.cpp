@@ -130,18 +130,15 @@ void align_levels_and_scales(
     }
 }
 
-void align_plain_to_cipher(Plaintext &pt, Ciphertext &ct, Evaluator &evaluator)
-{
+void align_plain_to_cipher(Plaintext &pt, Ciphertext &ct, Evaluator &evaluator, shared_ptr<SEALContext> context) {
     evaluator.mod_switch_to_inplace(pt, ct.parms_id());
     double diff = fabs(log2(ct.scale()) - log2(pt.scale()));
-    if (diff > 1.0)
-    {
-        if (ct.scale() > pt.scale())
-            ct.scale() = pt.scale();
-        else
-            pt.scale() = ct.scale();
+    if (diff > 1.0) {
+        if (ct.scale() > pt.scale()) ct.scale() = pt.scale();
+        else pt.scale() = ct.scale();
     }
 }
+
 
 void rotate_and_sum(
     Ciphertext &ct_in,
@@ -158,4 +155,53 @@ void rotate_and_sum(
         evaluator.add_inplace(ct_in, tmp);
         step <<= 1;
     }
+}
+
+Ciphertext sigmoid_quadratic(
+    Ciphertext ct_z,
+    double a0, double a1, double a2,
+    Evaluator &evaluator,
+    CKKSEncoder &encoder,
+    RelinKeys &relin_keys,
+    shared_ptr<SEALContext> context,
+    double scale)
+{
+    Ciphertext z2;
+    evaluator.square(ct_z, z2);
+    evaluator.relinearize_inplace(z2, relin_keys);
+    evaluator.rescale_to_next_inplace(z2);
+    z2.scale() = scale;
+
+    Plaintext pt_a1, pt_a2, pt_a0;
+    encoder.encode(a1, scale, pt_a1);
+    encoder.encode(a2, scale, pt_a2);
+    encoder.encode(a0, scale, pt_a0);
+
+    evaluator.mod_switch_to_inplace(pt_a1, ct_z.parms_id());
+    Ciphertext a1z;
+    evaluator.multiply_plain(ct_z, pt_a1, a1z);
+    evaluator.relinearize_inplace(a1z, relin_keys);
+    evaluator.rescale_to_next_inplace(a1z);
+    a1z.scale() = scale;
+
+    evaluator.mod_switch_to_inplace(pt_a2, z2.parms_id());
+    Ciphertext a2z2;
+    evaluator.multiply_plain(z2, pt_a2, a2z2);
+    evaluator.relinearize_inplace(a2z2, relin_keys);
+    evaluator.rescale_to_next_inplace(a2z2);
+    a2z2.scale() = scale;
+
+    while (a1z.parms_id() != a2z2.parms_id())
+    {
+        if (context->get_context_data(a1z.parms_id())->chain_index() >
+            context->get_context_data(a2z2.parms_id())->chain_index())
+            evaluator.mod_switch_to_next_inplace(a1z);
+        else
+            evaluator.mod_switch_to_next_inplace(a2z2);
+    }
+    evaluator.add_inplace(a1z, a2z2);
+
+    align_plain_to_cipher(pt_a0, a1z, evaluator, context);
+    evaluator.add_plain_inplace(a1z, pt_a0);
+    return a1z;
 }

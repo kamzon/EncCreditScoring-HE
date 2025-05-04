@@ -19,7 +19,15 @@ vector<double> read_csv_single_col(const string &filename);
 void print_parameters(const SEALContext &context);
 double decrypt_first_slot(const Ciphertext &ct, Decryptor &decryptor, CKKSEncoder &encoder);
 void align_levels_and_scales(Ciphertext &ctA, Ciphertext &ctB, Evaluator &evaluator, shared_ptr<SEALContext> context);
-void align_plain_to_cipher(Plaintext &pt, Ciphertext &ct, Evaluator &evaluator);
+void align_plain_to_cipher(Plaintext &pt, Ciphertext &ct, Evaluator &evaluator, shared_ptr<SEALContext> context);
 void rotate_and_sum(Ciphertext &ct_in, size_t input_dim, Evaluator &evaluator, const GaloisKeys &gal_keys);
-
+Ciphertext sigmoid_quadratic(
+    Ciphertext ct_z,
+    double a0, double a1, double a2,
+    Evaluator &evaluator,
+    CKKSEncoder &encoder,
+    RelinKeys &relin_keys,
+    shared_ptr<SEALContext> context,
+    double scale);
+    
 #endif // HOMOMORPHIC_LOGISTIC_REGRESSION_H
