@@ -140,7 +140,7 @@ int main()
 
             Plaintext pt_b;
             encoder.encode(b[i], init_scale, pt_b);
-            align_plain_to_cipher(pt_b, ct_prod, evaluator);
+            align_plain_to_cipher(pt_b, ct_prod, evaluator, context);
             evaluator.add_plain_inplace(ct_prod, pt_b);
 
             double val_enc = decrypt_first_slot(ct_prod, decryptor, encoder);
